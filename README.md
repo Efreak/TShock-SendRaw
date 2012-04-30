@@ -19,13 +19,13 @@ sendas - allows users to use /sendas
 
 Commands:
 ==============
-/sendraw [message] - [message] is broadcast to the server as a normal message
+/sendraw *message* - *message* is broadcast to the server as a normal message
 
-/sendred [message] - [message] is broadcast in red text
+/sendred *message* - *message* is broadcast in red text
 
-/sendwhite [message] - [message] is broadcast in white text
+/sendwhite *message* - *message* is broadcast in white text
 
-/sendas [player name] [message] - [message] is broadcast to the server as though [player name] has said it, with the correct group color, prefix, and suffix
+/sendas *player name* **message** - **message** is broadcast to the server as though *player name* has said it, with the correct group color, prefix, and suffix
 
 To Do:
 ==============
