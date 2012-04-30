@@ -98,7 +98,7 @@ namespace PluginTemplate
 					message += " " + args.Parameters[i];
 				}
 
-				Color messagecolor = new Color(players[0].Group.R, players[0].Group.G, players[0].Group.B);
+				Color messagecolor = new Color(players[0].Group.Color); //thanks, snirk
 				TShock.Utils.Broadcast(message, messagecolor);
 			}
 			
