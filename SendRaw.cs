@@ -190,7 +190,7 @@ namespace PluginTemplate
 			color.R=Convert.ToByte(args.Parameters[0],10);
 			color.G=Convert.ToByte(args.Parameters[1],10);
 			color.B=Convert.ToByte(args.Parameters[2],10);
-			TShock.Utils.Broadcast(message, FromName(ags.Parameters[0]));
+			TShock.Utils.Broadcast(message, color);
 		}
 	}
 }
