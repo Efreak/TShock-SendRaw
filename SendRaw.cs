@@ -50,8 +50,8 @@ namespace PluginTemplate
 		public void OnInitialize()
 		{
 			Commands.ChatCommands.Add(new Command("sendraw", SendRa, "sendraw"));
-            Commands.ChatCommands.Add(new Command("sendred", SendRed, "sendred"));
-            Commands.ChatCommands.Add(new Command("sendwhite", SendWhite, "sendwhite"));
+			Commands.ChatCommands.Add(new Command("sendred", SendRed, "sendred"));
+			Commands.ChatCommands.Add(new Command("sendwhite", SendWhite, "sendwhite"));
 			Commands.ChatCommands.Add(new Command("sendas", SendAs, "sendas"));
 		}
 
@@ -92,70 +92,70 @@ namespace PluginTemplate
 			}
 			else
 			{
-                string message = players[0].Group.Prefix + args.Parameters[0] + players[0].Group.Suffix + ":";
-                for (int i = 1; i < args.Parameters.Count; i++)
-                {
-                    message += " " + args.Parameters[i];
-                }
+				string message = players[0].Group.Prefix + args.Parameters[0] + players[0].Group.Suffix + ":";
+				for (int i = 1; i < args.Parameters.Count; i++)
+				{
+					message += " " + args.Parameters[i];
+				}
 
-                Color messagecolor = new Color(players[0].Group.R, players[0].Group.G, players[0].Group.B);
+				Color messagecolor = new Color(players[0].Group.R, players[0].Group.G, players[0].Group.B);
 				TShock.Utils.Broadcast(message, messagecolor);
 			}
 			
 		}
 		public static void SendRa(CommandArgs args)
 		{
-            if (args.Parameters.Count < 1)
-            {
-                args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
-                return;
-            }
-            else
-            {
-                string message = "";
-                for (int i = 0; i < args.Parameters.Count; i++)
-                {
-                    message += " " + args.Parameters[i];
-                }
+			if (args.Parameters.Count < 1)
+			{
+				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
+				return;
+			}
+			else
+			{
+				string message = "";
+				for (int i = 0; i < args.Parameters.Count; i++)
+				{
+					message += " " + args.Parameters[i];
+				}
 
-                TShock.Utils.Broadcast(message);
-            }
+				TShock.Utils.Broadcast(message);
+			}
 		}
-        public static void SendWhite(CommandArgs args)
-        {
-            if (args.Parameters.Count < 1)
-            {
-                args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
-                return;
-            }
-            else
-            {
-                string message = "";
-                for (int i = 0; i < args.Parameters.Count; i++)
-                {
-                    message += " " + args.Parameters[i];
-                }
+		public static void SendWhite(CommandArgs args)
+		{
+			if (args.Parameters.Count < 1)
+			{
+				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
+				return;
+			}
+			else
+			{
+				string message = "";
+				for (int i = 0; i < args.Parameters.Count; i++)
+				{
+					message += " " + args.Parameters[i];
+				}
 
-                TShock.Utils.Broadcast(message, Color.White);
-            }
-        }
-        public static void SendRed(CommandArgs args)
-        {
-            if (args.Parameters.Count < 1)
-            {
-                args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
-                return;
-            }
-            else
-            {
-                string message = "";
-                for (int i = 0; i < args.Parameters.Count; i++)
-                {
-                    message += " " + args.Parameters[i];
-                }
+				TShock.Utils.Broadcast(message, Color.White);
+			}
+		}
+		public static void SendRed(CommandArgs args)
+		{
+			if (args.Parameters.Count < 1)
+			{
+				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
+				return;
+			}
+			else
+			{
+				string message = "";
+				for (int i = 0; i < args.Parameters.Count; i++)
+				{
+					message += " " + args.Parameters[i];
+				}
 
-                TShock.Utils.Broadcast(message, Color.Red);
-            }
-        }
+				TShock.Utils.Broadcast(message, Color.Red);
+			}
+		}
 	}
 }
