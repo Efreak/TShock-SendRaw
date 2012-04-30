@@ -157,5 +157,21 @@ namespace PluginTemplate
 				TShock.Utils.Broadcast(message, Color.Red);
 			}
 		}
+		
+		public static void SendColor(CommandArgs args) //start new command for custom colors
+		{
+			if(args.Parameters.count < 2)
+			{
+				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendcolor [colorname] message");
+				return;
+			}
+				string message = "";
+				for (int i = 1; i < args.Parameters.Count; i++)
+				{
+					message += " " + args.Parameters[i];
+				}
+
+				TShock.Utils.Broadcast(message, FromName(ags.Parameters[0]));
+		}
 	}
 }
