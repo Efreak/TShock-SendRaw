@@ -158,20 +158,39 @@ namespace PluginTemplate
 			}
 		}
 		
-		public static void SendColor(CommandArgs args) //start new command for custom colors
+		public static void SendColor(CommandArgs args) //start new command for built-in colors
 		{
 			if(args.Parameters.count < 2)
 			{
 				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendcolor [colorname] message");
 				return;
 			}
-				string message = "";
-				for (int i = 1; i < args.Parameters.Count; i++)
-				{
-					message += " " + args.Parameters[i];
-				}
+			string message = "";
+			for (int i = 1; i < args.Parameters.Count; i++)
+			{
+				message += " " + args.Parameters[i];
+			}
 
-				TShock.Utils.Broadcast(message, FromName(ags.Parameters[0]));
+			TShock.Utils.Broadcast(message, FromName(ags.Parameters[0]));
+		}
+		public static void SendColor(CommandArgs args) //start new command for custom colors by RGB
+		{
+			if(args.Parameters.count < 4)
+			{
+				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendcolor [Red] [Green] [Blue] [message]. Use 0-255 for RGB values");
+				return;
+			}
+			string message = "";
+			for (int i = 3; i < args.Parameters.Count; i++)
+			{
+				message += " " + args.Parameters[i];
+			}
+			
+			Color color = new Color;
+			color.R=Convert.ToByte(args.Parameters[0],10);
+			color.G=Convert.ToByte(args.Parameters[1],10);
+			color.B=Convert.ToByte(args.Parameters[2],10);
+			TShock.Utils.Broadcast(message, FromName(ags.Parameters[0]));
 		}
 	}
 }
