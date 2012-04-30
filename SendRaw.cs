@@ -173,7 +173,7 @@ namespace PluginTemplate
 
 			TShock.Utils.Broadcast(message, FromName(ags.Parameters[0]));
 		}
-		public static void SendColor(CommandArgs args) //start new command for custom colors by RGB
+		public static void SendRGB(CommandArgs args) //start new command for custom colors by RGB
 		{
 			if(args.Parameters.count < 4)
 			{
