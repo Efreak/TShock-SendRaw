@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Linq;
-using System.IO;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using Terraria;
-using Hooks;
+using TerrariaApi.Server;
 using TShockAPI;
-using TShockAPI.DB;
-using System.ComponentModel;
-
 
 namespace PluginTemplate
 {
-	[APIVersion(1, 12)]
-	public class PluginTemplate : TerrariaPlugin
+    [ApiVersion(1, 19)]
+	public class SendRaw : TerrariaPlugin
 	{
 		public override string Name
 		{
@@ -35,113 +29,115 @@ namespace PluginTemplate
 
 		public override void Initialize()
 		{
-			GameHooks.Initialize += OnInitialize;
+            ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
 		}
 		protected override void Dispose(bool disposing)
 		{
-			GameHooks.Initialize -= OnInitialize;
+			if (disposing)
+            {
+                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
+            }
 			base.Dispose(disposing);
 		}
-		public PluginTemplate(Main game)
+		public SendRaw(Main game)
 			:base(game)
 		{
+            base.Order = 1;
 		}
 
-		public void OnInitialize()
+		public void OnInitialize(EventArgs args)
 		{
-			Commands.ChatCommands.Add(new Command("sendraw", SendRa, "sendraw"));
-			Commands.ChatCommands.Add(new Command("sendcolor", SendColor, "sendcolor"));
-            Commands.ChatCommands.Add(new Command("sendrgb", SendRGB, "sendrgb"));
-            Commands.ChatCommands.Add(new Command("sendas", SendAs, "sendas"));
+			Commands.ChatCommands.Add(new Command("send.raw", SendRa, "sendraw"));
+			Commands.ChatCommands.Add(new Command("send.color", SendColor, "sendcolor"));
+            Commands.ChatCommands.Add(new Command("send.rgb", SendRGB, "sendrgb"));
+            Commands.ChatCommands.Add(new Command("send.as", SendAs, "sendas"));
 		}
 
 		public static void SendAs(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
-				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendas <player> [message]", Color.Red);
+				args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /sendas <player> [message]");
 				return;
 			}
+
 			if (args.Parameters[0].Length == 0)
 			{
-				args.Player.SendMessage("Missing player name", Color.Red);
+				args.Player.SendErrorMessage("Missing player name");
 				return;
 			}
 
 			string plStr = args.Parameters[0];
 			var players = TShock.Utils.FindPlayer(plStr);
+
 			if (players.Count == 0)
 			{
-				args.Player.SendMessage("Invalid player!", Color.Red);
+                args.Player.SendErrorMessage($"Unknown Player: {args.Parameters[0]}");
                 return;
 			}
 			if (players.Count > 1)
 			{
-				var plrMatches = "";
-				foreach (TSPlayer plr in players)
-				{
-					if (plrMatches.Length != 0)
-					{
-						plrMatches += ", " + plr.Name;
-					}
-					else
-					{
-						plrMatches += plr.Name;
-					}
-				}
-				args.Player.SendMessage("More than one player matched! Matches: " + plrMatches, Color.Red);
+                TShock.Utils.SendMultipleMatchError(args.Player, players.Select(p => p.Name));
                 return;
 			}
-			string message = players[0].Group.Prefix + args.Parameters[0] + players[0].Group.Suffix + ":";
-			for (int i = 1; i < args.Parameters.Count; i++)
-			{
-				message += " " + args.Parameters[i];
-			}
 
-			Color messagecolor = new Color(players[0].Group.R, players[0].Group.G, players[0].Group.B);
-			TShock.Utils.Broadcast(message, messagecolor);
-		}
+            var param = args.Parameters;
+            param.RemoveAt(0);
+
+            string msg = string.Join(" ", param);
+
+            string text = String.Format(TShock.Config.ChatFormat, players[0].Group.Name, players[0].Group.Prefix, players[0].Name, players[0].Group.Suffix,
+                                             msg);
+
+            TShock.Utils.Broadcast(text, players[0].Group.R, players[0].Group.G, players[0].Group.B);
+            if (!args.Player.RealPlayer)
+                args.Player.SendSuccessMessage("Message sent.");
+        }
+
 		public static void SendRa(CommandArgs args)
 		{
 			if (args.Parameters.Count < 1)
 			{
-				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendraw [something to send]", Color.Red);
+				args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /sendraw [something to send]");
 				return;
 			}
-			string message = "";
-			for (int i = 0; i < args.Parameters.Count; i++)
-			{
-				message += " " + args.Parameters[i];
-			}
-			TShock.Utils.Broadcast(message);
-			
-            return;
+            string message = string.Join(" ", args.Parameters);
+
+			TShock.Utils.Broadcast(message, (byte)TShock.Config.BroadcastRGB[0], (byte)TShock.Config.BroadcastRGB[1], (byte)TShock.Config.BroadcastRGB[2]);
+            if (!args.Player.RealPlayer)
+                args.Player.SendSuccessMessage("Message sent.");
 		}
+
 		public static void SendColor(CommandArgs args) //start new command for built-in colors
 		{
-			if(args.Parameters.Count < 2)
+			if (args.Parameters.Count < 2)
 			{
-				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendcolor [colorname] message");
+				args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /sendcolor <colorname> <message>");
 				return;
 			}
-			string message = "";
-			for (int i = 1; i < args.Parameters.Count; i++)
-			{
-				message += " " + args.Parameters[i];
-			}
-            string colorname = "" + args.Parameters[0];
+
+            var param = args.Parameters;
+            param.RemoveAt(0);
+
+            string message = string.Join(" ", param);
+
+            string colorname = args.Parameters[0];
             Color color = ColorFromName(colorname);
             if (color != new Color(1, 1, 1))
+            {
                 TShock.Utils.Broadcast(message, color);
+                if (!args.Player.RealPlayer)
+                    args.Player.SendSuccessMessage("Message sent.");
+            }
             else
-                args.Player.SendMessage("Invalid color!");
-            return;
+                args.Player.SendErrorMessage("Invalid color!");
 		}
+
 		public static void SendRGB(CommandArgs args) //start new command for custom colors by RGB
 		{
 			if(args.Parameters.Count < 4)
 			{
-				args.Player.SendMessage("Invalid syntax! Proper syntax: /sendcolor [Red] [Green] [Blue] [message]. Use 0-255 for RGB values");
+				args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /sendrgb [Red] [Green] [Blue] [message]. Use 0-255 for RGB values");
 				return;
 			}
 			string message = "";
@@ -150,12 +146,22 @@ namespace PluginTemplate
 				message += " " + args.Parameters[i];
 			}
 
-			byte R=Convert.ToByte(args.Parameters[0],10);
-			byte G=Convert.ToByte(args.Parameters[1],10);
-			byte B=Convert.ToByte(args.Parameters[2],10);
-			TShock.Utils.Broadcast(message, new Color(R,G,B));
-            return;
-		}
+            int r, g, b;
+
+            if (!int.TryParse(args.Parameters[0], out r) || !int.TryParse(args.Parameters[1], out g) || !int.TryParse(args.Parameters[2], out b) ||
+                r < 0 || r > 255 ||
+                g < 0 || g > 255 ||
+                b < 0 || b > 255)
+            {
+                args.Player.SendErrorMessage("Invalid rgb!");
+                return;
+            }
+            
+			TShock.Utils.Broadcast(message, new Color((float)r, (float)g, (float)b));
+            if(!args.Player.RealPlayer)
+                args.Player.SendSuccessMessage("Message sent.");
+        }
+
 		public static Color ColorFromName(string name) //sigh...you guys removed this
 		{
             if (name == "aliceblue") return Color.AliceBlue;
