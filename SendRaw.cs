@@ -7,7 +7,7 @@ using TShockAPI;
 
 namespace PluginTemplate
 {
-    [ApiVersion(1, 19)]
+    [ApiVersion(1, 20)]
 	public class SendRaw : TerrariaPlugin
 	{
 		public override string Name
